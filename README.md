@@ -1,0 +1,2 @@
+# Crupto
+Ai guide
