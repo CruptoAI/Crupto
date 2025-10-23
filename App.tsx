@@ -1,19 +1,13 @@
 import 'react-native-gesture-handler';
 import React from 'react';
+import type { ComponentProps } from 'react';
 import { NavigationContainer, DefaultTheme as NavigationDefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import LottieView from 'lottie-react-native';
-import {
-  MD3LightTheme,
-  Provider as PaperProvider,
-  SegmentedButtons,
-  Text,
-  Button,
-  useTheme,
-} from 'react-native-paper';
-import { StyleSheet, View } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import { MD3LightTheme, Provider as PaperProvider, SegmentedButtons, Text, Button, useTheme } from 'react-native-paper';
+import { StyleSheet, View, Animated } from 'react-native';
 
 const paperTheme = {
   ...MD3LightTheme,
@@ -39,33 +33,32 @@ const navigationTheme = {
   },
 };
 
+type FeatherIconName = ComponentProps<typeof Feather>['name'];
+
 type TabIconProps = {
   focused: boolean;
   color: string;
+  icon: FeatherIconName;
 };
 
-const TabBarIcon: React.FC<TabIconProps> = ({ focused, color }) => {
-  const animationRef = React.useRef<LottieView>(null);
+const TabBarIcon: React.FC<TabIconProps> = ({ focused, color, icon }) => {
+  const scale = React.useRef(new Animated.Value(focused ? 1.08 : 1)).current;
 
   React.useEffect(() => {
-    if (focused) {
-      animationRef.current?.reset();
-      animationRef.current?.play();
-    } else {
-      animationRef.current?.reset();
-    }
-  }, [focused]);
+    Animated.spring(scale, {
+      toValue: focused ? 1.08 : 1,
+      friction: 7,
+      tension: 120,
+      useNativeDriver: true,
+    }).start();
+  }, [focused, scale]);
 
   return (
-    <LottieView
-      ref={animationRef}
-      source={require('./assets/lottie/tab-pulse.json')}
-      autoPlay={false}
-      loop={false}
-      speed={1.6}
-      style={styles.icon}
-      colorFilters={[{ keypath: 'Fill 1', color }]}
-    />
+    <View style={styles.iconWrapper}>
+      <Animated.View style={[styles.iconGlyphWrapper, { transform: [{ scale }] }]}>
+        <Feather name={icon} size={24} color={color} />
+      </Animated.View>
+    </View>
   );
 };
 
@@ -190,6 +183,13 @@ const AccountScreen = () => <ComingSoonScreen label="Account" />;
 
 const Tabs = () => {
   const theme = useTheme();
+  const iconMap: Record<string, FeatherIconName> = {
+    Home: 'home',
+    Chat: 'message-circle',
+    Markets: 'bar-chart-2',
+    News: 'file-text',
+    Account: 'user',
+  };
 
   return (
     <Tab.Navigator
@@ -207,7 +207,10 @@ const Tabs = () => {
           fontSize: 12,
           marginBottom: 8,
         },
-        tabBarIcon: ({ focused, color }) => <TabBarIcon focused={focused} color={color} />,
+        tabBarIcon: ({ focused, color }) => {
+          const iconName = iconMap[route.name] ?? 'circle';
+          return <TabBarIcon focused={focused} color={color} icon={iconName} />;
+        },
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
@@ -282,9 +285,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#6B7280',
   },
-  icon: {
-    width: 36,
-    height: 36,
+  iconWrapper: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: -4,
+  },
+  iconGlyphWrapper: {
+    zIndex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
