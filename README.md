@@ -21,7 +21,7 @@ From the Expo CLI you can open the project in Expo Go, an Android emulator, or t
 
 ## Current screens
 
-- **Home** – two primary actions (`Dive In`, `Ask AI`) logging to the console for now.
+- **Home** – two primary actions (`Dive In`, `Ask AI`); Ask AI opens a bottom-sheet chat that keeps the conversation for the current session.
 - **Chat** & **Account** – placeholders that say “Coming soon”.
 - **Markets** – Paper segmented buttons toggling `Crypto` / `TradFi` state with contextual copy.
 - **News** – mirrors the Markets toggle for curated headlines.
