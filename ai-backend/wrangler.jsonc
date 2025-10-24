@@ -1,0 +1,6 @@
+{
+  "name": "ai-backend",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-01",
+  "account_id": "1c9ab119ddda57a95400d3a4e2b2c588"
+}
